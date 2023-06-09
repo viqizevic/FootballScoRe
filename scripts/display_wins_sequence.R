@@ -1,6 +1,6 @@
 # Display wins sequence
 
-get_wins_sequence <- function(results) {
+get_wins_sequence <- function(results, one_column=TRUE) {
   
   # firstly, get all results
   # as when needed to create league table
@@ -27,14 +27,30 @@ get_wins_sequence <- function(results) {
     ) %>% 
     arrange(Team)
   
-  # columns to paste together
-  cols <- names(forms %>% select(-Team))
-  
-  # create a new column with the columns collapsed together
-  forms$Form <- apply( forms[ , cols ] , 1 , paste , collapse = " " )
-  
-  forms %>% select(Team, Form)
+  if (one_column) {
+    # columns to paste together
+    cols <- names(forms %>% select(-Team))
+    
+    # create a new column with the columns collapsed together
+    forms$Form <- apply( forms[ , cols ] , 1 , paste , collapse = " " )
+    
+    return(forms %>% select(Team, Form))
+  }
+  return(forms)
 }
 
-forms <- get_wins_sequence(results)
-forms %>% formattable()
+forms <- get_wins_sequence(results, one_column = FALSE)
+
+n_round <- length(names(forms))-1
+col_rounds <- 2:(n_round+1)
+round_color <- function () {
+  formatter("span",
+            style = function(x) style(`color` = ifelse(x == "W", "green", 
+                                                       ifelse(x == "L", "red", "grey"))))
+}
+
+forms %>% formattable(
+  list(
+    area(col = col_rounds) ~ round_color()
+  )
+)
