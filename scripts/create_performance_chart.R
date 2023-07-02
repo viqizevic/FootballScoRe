@@ -30,7 +30,6 @@ create_performance_chart <- function(results) {
 
   n_teams <- results %>% count(Team.1) %>% nrow()
   chart_data$pos <- n_teams+1 - chart_data$pos
-  chart_data$Team <- as.factor(chart_data$Team)
   tcolors <- c("red","skyblue","royalblue")
   names(tcolors) <- top_teams
   
